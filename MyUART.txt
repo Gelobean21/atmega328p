@@ -1,0 +1,61 @@
+const char starter = 'H';
+const char ender = 'E';
+const int maxbuff = 5;
+char message[maxbuff];
+bool foundstarter = false;
+bool foundender = false;
+bool isfirst = false;
+int index = 0;
+
+
+void setup()
+{
+  Serial.begin(115200); 
+}
+
+void loop()
+{
+  while(Serial.available()){
+    char incoming = Serial.read();
+    
+    if(incoming == starter){
+      foundstarter = true;
+      isfirst = true;
+    }
+    
+    if(foundstarter){
+      if(index == maxbuff - 1){
+        resets();
+      }
+      else{
+        if(incoming == ender){
+          finishingtouch();
+        }
+        else{
+          if(!isfirst){
+            message[index] = incoming;
+            index++;
+          }
+        }
+      }
+      isfirst = false;
+    }
+  }
+}
+
+
+void finishingtouch(){
+  message[index++] = '\0';  
+  
+  Serial.println(message);
+  
+  
+  resets();
+}
+
+void resets(){
+  foundstarter = false;
+  isfirst = true;
+  index = 0;
+  memset(message, 0, sizeof(message));
+}
